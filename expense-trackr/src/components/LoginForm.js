@@ -24,7 +24,7 @@ const LoginForm = () => {
       }
 
       // Make a request to authenticate the user
-      const respoinse = await fetch('http://example.com/api/login', {
+      const response = await fetch('http://example.com/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
