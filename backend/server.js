@@ -6,6 +6,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import expensesRoutes from './routes/expensesRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import authMiddleware from './middleware/authMiddleware.js';
 
 const app = express();
 
@@ -23,7 +24,7 @@ mongoose.connect(mongoURI, {
 .catch(err => console.error('Error connecting to MongoDB:', err));
 
 // Routes
-app.use('/expenses', expensesRoutes);
+app.use('/expenses', authMiddleware, expensesRoutes); // Protect routes with authentication middleware
 app.use('/auth', authRoutes);
 
 // Define port

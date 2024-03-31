@@ -24,7 +24,7 @@ const LoginForm = () => {
       }
 
       // Make a request to authenticate the user
-      const response = await fetch('http://example.com/api/login', {
+      const response = await fetch('http://localhost:5000/api/login', { // Update URL to match your backend server
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

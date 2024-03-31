@@ -3,6 +3,7 @@
 import express from 'express';
 import User from '../models/user.js';
 import jwt from 'jsonwebtoken';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -57,11 +58,21 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// POST /logout - User logout
+router.post('/logout', authMiddleware, (req, res) => {
+  // Implement logout logic (e.g., invalidate JWT token)
+  res.status(200).json({ message: 'User logged out successfully' });
+});
+
+// POST /password-reset - Password reset
+router.post('/password-reset', (req, res) => {
+  // Implement password reset logic
+  res.status(200).json({ message: 'Password reset request received' });
+});
+
 // Helper function to generate JWT token
 const generateToken = (user) => {
   return jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
 };
-
-// Add more routes for logout, password reset, etc.
 
 export default router;
