@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
+import SignupForm from './components/SignupForm';
 
 function App() {
     // State to track user authentication status
@@ -15,10 +16,21 @@ function App() {
         setIsLoggedIn(true);
     };
 
+    // JSX to render the SignupForm component
+    const renderSignupForm = () => {
+        return (
+            <div>
+                <h2>Sign Up</h2>
+                <SignupForm />
+            </div>
+        );
+    };
+
     return (
         <div className="App">
-            {/* Conditionally render login form or dashboard */}
+            {/* Conditionally render login form, signup form, or dashboard */}
             {isLoggedIn ? <Dashboard /> : <LoginForm onLogin={handleLogin} />}
+            {renderSignupForm()} {/* Render the SignupForm component */}
         </div>
     );
 }
