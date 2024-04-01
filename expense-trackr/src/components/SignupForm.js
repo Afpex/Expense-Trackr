@@ -13,6 +13,7 @@ const SignupForm = () => {
   // Function to handle form submission
 const handleSubmit = async (e) => {
   e.preventDefault();
+  console.log('Submitting form...');
   try {
     // Make a POST request to the backend signup endpoint
     const response = await fetch('http://localhost:5000/api/register', {
