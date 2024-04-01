@@ -23,6 +23,8 @@ const handleSubmit = async (e) => {
       body: JSON.stringify(formData)
     });
 
+    console.log('Response:', response); // Log the response object
+
     if (response.ok) {
       // User registered successfully
       // Redirect to login page or display success message

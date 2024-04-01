@@ -12,16 +12,27 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+
+// Configure CORS middleware
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow requests from this origin
+  credentials: true // Allow including cookies in cross-origin requests
+}));
 
 // Connect to MongoDB
 const mongoURI = 'mongodb+srv://bondolo90:RoTKuRHDx2KZZHth@cluster0.qpajh96.mongodb.net/';
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('Error connecting to MongoDB:', err));
+});
+
+// Handle MongoDB connection errors
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+//.then(() => console.log('Connected to MongoDB'))
+//.catch(err => console.error('Error connecting to MongoDB:', err));
 
 // Routes
 app.use('/expenses', authMiddleware, expensesRoutes); // Protect routes with authentication middleware
