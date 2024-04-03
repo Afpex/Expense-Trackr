@@ -22,6 +22,7 @@ function App() {
                     <Route path="/" element={isLoggedIn ? <Dashboard /> : <Link to="/login" />} />
                     <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
                     <Route path="/signup" element={<SignupForm />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     {/* Redirect to login if route is unknown, or consider adding a NotFound component */}
                     <Route path="*" element={<Link to="/login" />} />
                 </Routes>

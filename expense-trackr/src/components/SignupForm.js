@@ -24,7 +24,7 @@ const SignupForm = () => {
 
     try {
       // Make a POST request to the backend to register the user
-      const response = await fetch('http://localhost:5000/api/register', {
+      const response = await fetch('http://localhost:5000/auth/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

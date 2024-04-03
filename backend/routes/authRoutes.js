@@ -1,3 +1,4 @@
+
 // authRoutes.js
 
 import express from 'express';
@@ -59,13 +60,13 @@ router.post('/login', async (req, res) => {
 });
 
 // POST /logout - User logout
-router.post('/logout', authMiddleware, (req, res) => {
+router.post('/api/logout', authMiddleware, (req, res) => {
   // Implement logout logic (e.g., invalidate JWT token)
   res.status(200).json({ message: 'User logged out successfully' });
 });
 
 // POST /password-reset - Password reset
-router.post('/password-reset', (req, res) => {
+router.post('/api/password-reset', (req, res) => {
   // Implement password reset logic
   res.status(200).json({ message: 'Password reset request received' });
 });

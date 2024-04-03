@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-// Optional: Import useNavigate if you want to redirect the user after login
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = ({ onLogin }) => {
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const navigate = useNavigate();
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
-
-  // const navigate = useNavigate(); // Uncomment if you're using useNavigate for redirection
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -14,27 +12,26 @@ const LoginForm = ({ onLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoginError(''); // Clear any existing login errors
+    setLoginError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch('http://localhost:5000/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        // Assuming login success updates the application state
         onLogin(true);
-        // Optional: Redirect the user to another route upon successful login
-        // navigate('/dashboard'); // Uncomment if redirecting
+        // Redirect to dashboard or any other page after successful login
+        navigate('/dashboard');
       } else {
-        // If the login wasn't successful, inform the user
-        // Here you could also parse the response body to show a detailed error message
-        setLoginError('Login failed. Please check your credentials and try again.');
+        // Handle login failure
+        setLoginError(data.message || 'Login failed. Please check your credentials and try again.');
       }
     } catch (error) {
-      // Handle network or other errors
       console.error('Login error:', error);
       setLoginError('An error occurred during login. Please try again later.');
     }
@@ -44,11 +41,11 @@ const LoginForm = ({ onLogin }) => {
     <form onSubmit={handleSubmit}>
       <div>
         <label>
-          Username/Email:
+          Email:
           <input
-            type="text"
-            name="username"
-            value={credentials.username}
+            type="email"
+            name="email"
+            value={credentials.email}
             onChange={handleChange}
           />
         </label>
