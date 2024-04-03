@@ -1,8 +1,9 @@
-// SignupForm.js
-
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 const SignupForm = () => {
+  const navigate = useNavigate(); // Initialize useNavigate to use for navigation
+
   // State for managing form data
   const [formData, setFormData] = useState({
     username: '',
@@ -10,61 +11,82 @@ const SignupForm = () => {
     password: ''
   });
 
+  // State for displaying a message to the user (error or success)
+  const [message, setMessage] = useState('');
+
+  // State for tracking whether the form has been submitted
+  const [submitted, setSubmitted] = useState(false);
+
   // Function to handle form submission
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log('Submitting form...');
-  try {
-    // Make a POST request to the backend signup endpoint
-    const response = await fetch('http://localhost:5000/api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formData)
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent the default form submission behavior
+    console.log('Submitting form...'); // Log a message to indicate form submission
 
-    console.log('Response:', response); // Log the response object
+    try {
+      // Make a POST request to the backend to register the user
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData) // Send the form data as JSON
+      });
 
-    if (response.ok) {
-      // User registered successfully
-      // Redirect to login page or display success message
-    } else {
-      // Registration failed, handle error
-      console.error('Registration error:', await response.json());
-      // Display error message to the user
+      const data = await response.json(); // Parse the response data as JSON
+
+      if (response.ok) {
+        // If the response is ok, registration was successful
+        setMessage('User registered successfully'); // Set a success message
+        setSubmitted(true); // Set submitted to true
+        setTimeout(() => {
+          navigate('/login'); // Redirect to the login page after 2 seconds
+        }, 2000);
+      } else {
+        // If the response is not ok, show the error message from the response
+        setMessage(data.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Error registering user:', error); // Log any errors to the console
+      setMessage('Failed to register. Please try again.'); // Set a fallback error message
     }
-  } catch (error) {
-    console.error('Error registering user:', error);
-    // Display error message to the user
-  }
-};
+  };
 
-  // Function to handle input changes
+  // Function to handle changes in the form inputs
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value // Update the form data with the new input values
     });
   };
 
-  // JSX for the signup form
+  // Render the signup form
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Username:
-        <input type="text" name="username" value={formData.username} onChange={handleChange} />
-      </label>
-      <label>
-        Email:
-        <input type="email" name="email" value={formData.email} onChange={handleChange} />
-      </label>
-      <label>
-        Password:
-        <input type="password" name="password" value={formData.password} onChange={handleChange} />
-      </label>
-      <button type="submit">Sign Up</button>
-    </form>
+    <div>
+      {!submitted ? (
+        // Render the form if it has not been submitted
+        <form onSubmit={handleSubmit}>
+          <label>
+            Username:
+            <input type="text" name="username" value={formData.username} onChange={handleChange} />
+          </label>
+          <br />
+          <label>
+            Email:
+            <input type="email" name="email" value={formData.email} onChange={handleChange} />
+          </label>
+          <br />
+          <label>
+            Password:
+            <input type="password" name="password" value={formData.password} onChange={handleChange} />
+          </label>
+          <br />
+          <button type="submit">Sign Up</button>
+        </form>
+      ) : (
+        // Render a success message if the form has been submitted
+        <p>{message}</p>
+      )}
+    </div>
   );
 };
 
