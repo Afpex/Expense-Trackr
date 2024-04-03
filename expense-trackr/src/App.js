@@ -1,7 +1,5 @@
-// src/App.js
-
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 import SignupForm from './components/SignupForm';
@@ -9,19 +7,23 @@ import SignupForm from './components/SignupForm';
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    const handleLogin = (success) => {
-        setIsLoggedIn(success);
+    const handleLogin = () => {
+        setIsLoggedIn(true);
+        // Additional login logic
     };
 
     return (
         <Router>
             <div className="App">
+                <nav>
+                    <Link to="/login">Login</Link> | <Link to="/signup">Sign Up</Link>
+                </nav>
                 <Routes>
-                    <Route path="/" element={isLoggedIn ? <Dashboard /> : <Navigate replace to="/login" />} />
-                    <Route path="/login" element={<LoginForm onLogin={() => handleLogin(true)} />} />
+                    <Route path="/" element={isLoggedIn ? <Dashboard /> : <Link to="/login" />} />
+                    <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
                     <Route path="/signup" element={<SignupForm />} />
-                    {/* Redirect users trying to access undefined routes to the login page or a NotFound component */}
-                    <Route path="*" element={<Navigate to="/login" />} />
+                    {/* Redirect to login if route is unknown, or consider adding a NotFound component */}
+                    <Route path="*" element={<Link to="/login" />} />
                 </Routes>
             </div>
         </Router>
@@ -29,3 +31,4 @@ function App() {
 }
 
 export default App;
+
