@@ -1,75 +1,71 @@
-// components/LoginForm.js
-
 import React, { useState } from 'react';
+// Optional: Import useNavigate if you want to redirect the user after login
+// import { useNavigate } from 'react-router-dom';
 
-const LoginForm = () => {
-  const [credentials, setCredentials] = useState({
-    username: '',
-    password: ''
-  });
+const LoginForm = ({ onLogin }) => {
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [loginError, setLoginError] = useState('');
+
+  // const navigate = useNavigate(); // Uncomment if you're using useNavigate for redirection
 
   const handleChange = (e) => {
-    setCredentials({
-      ...credentials,
-      [e.target.name]: e.target.value
-    });
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      // Perform client-side validation
-      if (!credentials.username || !credentials.password) {
-        throw new Error('Please enter both username/email and password');
-      }
+    setLoginError(''); // Clear any existing login errors
 
-      // Make a request to authenticate the user
-      const response = await fetch('http://localhost:5000/api/login', { // Update URL to match your backend server
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(credentials)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
       });
-      
-      // Check if the request was successful
+
       if (response.ok) {
-        // User authenticated successfully, redirect or update UI accordingly
-        // For example, you can redirect the user to the dashboard
-        window.location.href = '/dashboard';
+        // Assuming login success updates the application state
+        onLogin(true);
+        // Optional: Redirect the user to another route upon successful login
+        // navigate('/dashboard'); // Uncomment if redirecting
       } else {
-        // Authentication failed, handle error
-        const data = await response.json();
-        throw new Error(data.message || 'Authentication failed');
+        // If the login wasn't successful, inform the user
+        // Here you could also parse the response body to show a detailed error message
+        setLoginError('Login failed. Please check your credentials and try again.');
       }
     } catch (error) {
-      // Handle errors
-      console.error('Login error:', error.message);
-      // Update UI to display error message to the user
+      // Handle network or other errors
+      console.error('Login error:', error);
+      setLoginError('An error occurred during login. Please try again later.');
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>
-        Username/Email:
-        <input
-          type="text"
-          name="username"
-          value={credentials.username}
-          onChange={handleChange}
-        />
-      </label>
-      <label>
-        Password:
-        <input
-          type="password"
-          name="password"
-          value={credentials.password}
-          onChange={handleChange}
-        />
-      </label>
+      <div>
+        <label>
+          Username/Email:
+          <input
+            type="text"
+            name="username"
+            value={credentials.username}
+            onChange={handleChange}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          Password:
+          <input
+            type="password"
+            name="password"
+            value={credentials.password}
+            onChange={handleChange}
+          />
+        </label>
+      </div>
       <button type="submit">Login</button>
+      {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
     </form>
   );
 };
