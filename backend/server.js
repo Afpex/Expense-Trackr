@@ -4,7 +4,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import expensesRoutes from './routes/expensesRoutes.js';
 import authRoutes from './routes/authRoutes.js';
-import expensesRoutes from './routes/expensesRoutes.js';
+//import expensesRoutes from './routes/expensesRoutes.js';
 import authMiddleware from './middleware/authMiddleware.js';
 
 const app = express();

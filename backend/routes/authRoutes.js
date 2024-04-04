@@ -1,4 +1,3 @@
-
 // authRoutes.js
 
 import express from 'express';

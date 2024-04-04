@@ -1,102 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { PieChart } from 'react-minimal-pie-chart';
+// routes/expensesRoutes.js
 
-const Dashboard = () => {
-    const [expenses, setExpenses] = useState([]);
-    const [newExpense, setNewExpense] = useState({
-        amount: '',
-        description: ''
-    });
+import express from 'express';
+import Expense from '../models/Expense.js';
 
-    useEffect(() => {
-        fetchExpenses();
-    }, []);
+const router = express.Router();
 
-    const fetchExpenses = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/expenses');
-            if (response.ok) {
-                const data = await response.json();
-                setExpenses(data);
-            } else {
-                console.error('Failed to fetch expenses:', response.statusText);
-            }
-        } catch (error) {
-            console.error('Error fetching expenses:', error);
-        }
-    };
+// GET /expenses - Fetch all expenses
+router.get('/', async (req, res) => {
+  try {
+    const expenses = await Expense.find();
+    res.json(expenses);
+  } catch (error) {
+    console.error('Error fetching expenses:', error);
+    res.status(500).json({ message: 'Failed to fetch expenses' });
+  }
+});
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('http://localhost:5000/expenses', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newExpense)
-            });
-            if (response.ok) {
-                setNewExpense({ amount: '', description: '' });
-                fetchExpenses();
-            } else {
-                console.error('Failed to add expense:', response.statusText);
-            }
-        } catch (error) {
-            console.error('Error adding expense:', error);
-        }
-    };
+// POST /expenses - Create a new expense
+router.post('/', async (req, res) => {
+  try {
+    const { amount, description } = req.body;
+    const newExpense = new Expense({ amount, description });
+    await newExpense.save();
+    res.status(201).json(newExpense);
+  } catch (error) {
+    console.error('Error creating expense:', error);
+    res.status(500).json({ message: 'Failed to create expense' });
+  }
+});
 
-    const handleChange = (e) => {
-        setNewExpense({
-            ...newExpense,
-            [e.target.name]: e.target.value
-        });
-    };
+// PUT /expenses/:id - Update an expense
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount, description } = req.body;
+    const updatedExpense = await Expense.findByIdAndUpdate(id, { amount, description }, { new: true });
+    res.json(updatedExpense);
+  } catch (error) {
+    console.error('Error updating expense:', error);
+    res.status(500).json({ message: 'Failed to update expense' });
+  }
+});
 
-    const totalAmount = expenses.reduce((total, expense) => total + parseFloat(expense.amount), 0);
+// DELETE /expenses/:id - Delete an expense
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Expense.findByIdAndDelete(id);
+    res.json({ message: 'Expense deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting expense:', error);
+    res.status(500).json({ message: 'Failed to delete expense' });
+  }
+});
 
-    return (
-        <div>
-            <h2>Dashboard</h2>
-
-            <div>
-                <h3>Add Expense</h3>
-                <form onSubmit={handleSubmit}>
-                    <label>
-                        Amount:
-                        <input type="number" name="amount" value={newExpense.amount} onChange={handleChange} />
-                    </label>
-                    <label>
-                        Description:
-                        <input type="text" name="description" value={newExpense.description} onChange={handleChange} />
-                    </label>
-                    <button type="submit">Add Expense</button>
-                </form>
-            </div>
-
-            <div style={{ width: '300px', height: '300px', margin: '20px auto' }}>
-                <h3>Expenses Proportions</h3>
-                <PieChart
-                    data={expenses.map(expense => ({
-                        title: expense.description,
-                        value: parseFloat(expense.amount),
-                        color: '#' + Math.floor(Math.random()*16777215).toString(16)
-                    }))}
-                    label={({ dataEntry }) => `${dataEntry.title}: ${Math.round((dataEntry.value / totalAmount) * 100)}%`}
-                />
-            </div>
-
-            <div>
-                <h3>Expenses</h3>
-                <ul>
-                    {expenses.map((expense, index) => (
-                        <li key={index}>{expense.description} - ${parseFloat(expense.amount).toFixed(2)}</li>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    );
-};
-
-export default Dashboard;
+export default router;

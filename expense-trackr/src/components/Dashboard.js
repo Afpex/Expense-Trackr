@@ -1,26 +1,52 @@
-// components/Dashboard.js
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
 
 const Dashboard = () => {
-    // State for managing expense data
     const [expenses, setExpenses] = useState([]);
     const [newExpense, setNewExpense] = useState({
         amount: '',
         description: ''
     });
 
-    // Function to handle form submission
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Add new expense to the expenses array
-        setExpenses([...expenses, newExpense]);
-        // Clear the form fields
-        setNewExpense({ amount: '', description: '' });
+    useEffect(() => {
+        fetchExpenses();
+    }, []);
+
+    const fetchExpenses = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/expenses');
+            if (response.ok) {
+                const data = await response.json();
+                setExpenses(data);
+            } else {
+                console.error('Failed to fetch expenses:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching expenses:', error);
+        }
     };
 
-    // Function to handle input changes
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:5000/expenses', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newExpense)
+            });
+            if (response.ok) {
+                setNewExpense({ amount: '', description: '' });
+                fetchExpenses();
+            } else {
+                console.error('Failed to add expense:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error adding expense:', error);
+        }
+    };
+
     const handleChange = (e) => {
         setNewExpense({
             ...newExpense,
@@ -28,14 +54,12 @@ const Dashboard = () => {
         });
     };
 
-    // Calculate total amount of expenses
     const totalAmount = expenses.reduce((total, expense) => total + parseFloat(expense.amount), 0);
 
     return (
         <div>
             <h2>Dashboard</h2>
 
-            {/* Form for adding new expenses */}
             <div>
                 <h3>Add Expense</h3>
                 <form onSubmit={handleSubmit}>
@@ -51,20 +75,18 @@ const Dashboard = () => {
                 </form>
             </div>
 
-            {/* Display pie chart of expenses */}
             <div style={{ width: '300px', height: '300px', margin: '20px auto' }}>
                 <h3>Expenses Proportions</h3>
                 <PieChart
                     data={expenses.map(expense => ({
                         title: expense.description,
                         value: parseFloat(expense.amount),
-                        color: '#' + Math.floor(Math.random()*16777215).toString(16) // Generate random color
+                        color: '#' + Math.floor(Math.random()*16777215).toString(16)
                     }))}
                     label={({ dataEntry }) => `${dataEntry.title}: ${Math.round((dataEntry.value / totalAmount) * 100)}%`}
                 />
             </div>
 
-            {/* Display list of expenses */}
             <div>
                 <h3>Expenses</h3>
                 <ul>
