@@ -59,9 +59,14 @@ router.post('/login', async (req, res) => {
 });
 
 // POST /logout - User logout
-router.post('/api/logout', authMiddleware, (req, res) => {
-  // Implement logout logic (e.g., invalidate JWT token)
-  res.status(200).json({ message: 'User logged out successfully' });
+router.post('/logout', authMiddleware, (req, res) => {
+  try {
+    // Invalidate JWT token by setting an empty token in the response
+    res.status(200).json({ token: '' });
+  } catch (error) {
+    console.error('Error logging out:', error);
+    res.status(500).json({ message: 'Failed to log out' });
+  }
 });
 
 // POST /password-reset - Password reset
