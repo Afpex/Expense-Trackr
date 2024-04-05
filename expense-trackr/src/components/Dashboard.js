@@ -89,7 +89,7 @@ const Dashboard = () => {
                     <button type="submit">{editingExpense ? 'Update Expense' : 'Add Expense'}</button>
                 </form>
             </div>
-            <div style={{ width: '300px', height: '300px', margin: '20px auto' }}>
+            <div style={{ width: '500px', height: '300px', margin: '20px auto' }}>
                 <PieChart
                     data={expenses.map(expense => ({
                         title: expense.description,
@@ -97,6 +97,11 @@ const Dashboard = () => {
                         color: '#' + Math.floor(Math.random()*16777215).toString(16),
                     }))}
                     label={({ dataEntry }) => `${dataEntry.title}: ${Math.round(dataEntry.percentage)} %`}
+                    labelStyle={{
+                        fontSize: '5px', // Smaller font size
+                        fontFamily: 'sans-serif',
+                    }}
+                    labelPosition={30} // Position labels outside of the chart
                 />
             </div>
             <div>
